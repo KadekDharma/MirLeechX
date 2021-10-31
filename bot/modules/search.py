@@ -17,14 +17,14 @@ def search(update, context):
         key = update.message.text.split(" ", maxsplit=1)[1]
         client = get_client()
         search = client.search_start(pattern=str(key), plugins='all', category='all')
-        srchmsg = sendMessage("Searching...", context.bot, update)
+        srchmsg = sendMessage("Searching...🔎🔎", context.bot, update)
         user_id = update.message.from_user.id
         search_id = search.id
-        LOGGER.info(f"qBittorrent Search: {key}")
+        LOGGER.info(f"qBittorrent Search🔎🔎: {key}")
         while True:
             result_status = client.search_status(search_id=search_id)
             status = result_status[0].status
-            if status != 'Running':
+            if status != 'Running♻️':
                 break
         dict_search_results = client.search_results(search_id=search_id)
         search_results = dict_search_results.results
@@ -34,18 +34,18 @@ def search(update, context):
             msg = getResult(search_results)
             buttons = button_build.ButtonMaker()
             if total_results > 3:
-                msg += f"<b>Pages: </b>1/{total_pages} | <b>Results: </b>{total_results}"
-                buttons.sbutton("Previous", f"srchprev {user_id} {search_id}")
-                buttons.sbutton("Next", f"srchnext {user_id} {search_id}")
-            buttons.sbutton("Close", f"closesrch {user_id} {search_id}")
+                msg += f"<b>Pages📜: </b>1/{total_pages} | <b>Results♻️: </b>{total_results}"
+                buttons.sbutton("Previous◀️", f"srchprev {user_id} {search_id}")
+                buttons.sbutton("Next▶️", f"srchnext {user_id} {search_id}")
+            buttons.sbutton("Close❌", f"closesrch {user_id} {search_id}")
             button = InlineKeyboardMarkup(buttons.build_menu(2))
             editMessage(msg, srchmsg, button)
             with search_dict_lock:
                 search_dict[search_id] = client, search_results, total_results, total_pages, 1, 0
         else:
-            editMessage(f"No result found for <i>{key}</i>", srchmsg)
+            editMessage(f"No result found for❓❓ <i>{key}</i>", srchmsg)
     except IndexError:
-        sendMessage("Send a search key along with command", context.bot, update)
+        sendMessage("Send a search key along with command❗", context.bot, update)
     except Exception as e:
         LOGGER.error(str(e))
 
@@ -62,7 +62,7 @@ def searchPages(update, context):
         try:
             client, search_results, total_results, total_pages, pageNo, start = search_dict[search_id]
         except:
-            query.answer(text="Old Result", show_alert=True)
+            query.answer(text="Old Result♻️", show_alert=True)
             query.message.delete()
             return
     if data[0] == "srchnext":
@@ -92,11 +92,11 @@ def searchPages(update, context):
     with search_dict_lock:
         search_dict[search_id] = client, search_results, total_results, total_pages, pageNo, start
     msg = getResult(search_results, start=start)
-    msg += f"<b>Pages: </b>{pageNo}/{total_pages} | <b>Results: </b>{total_results}"
+    msg += f"<b>Pages📜: </b>{pageNo}/{total_pages} | <b>Results♻️: </b>{total_results}"
     buttons = button_build.ButtonMaker()
-    buttons.sbutton("Previous", f"srchprev {user_id} {search_id}")
-    buttons.sbutton("Next", f"srchnext {user_id} {search_id}")
-    buttons.sbutton("Close", f"closesrch {user_id} {search_id}")
+    buttons.sbutton("Previous◀️", f"srchprev {user_id} {search_id}")
+    buttons.sbutton("Next▶️", f"srchnext {user_id} {search_id}")
+    buttons.sbutton("Close❌", f"closesrch {user_id} {search_id}")
     button = InlineKeyboardMarkup(buttons.build_menu(2))
     query.answer()
     editMessage(msg, query.message, button)
@@ -105,9 +105,9 @@ def getResult(search_results, start=0):
     msg = ""
     for index, result in enumerate(search_results[start:], start=1):
         msg += f"<a href='{result.descrLink}'>{result.fileName}</a>\n"
-        msg += f"<b>Size: </b>{get_readable_file_size(result.fileSize)}\n"
-        msg += f"<b>Seeders: </b>{result.nbSeeders} | <b>Leechers: </b>{result.nbLeechers}\n"
-        msg += f"<b>Link: </b><code>{result.fileUrl}</code>\n\n"
+        msg += f"<b>📏Size: </b>{get_readable_file_size(result.fileSize)}\n"
+        msg += f"<b>⌛Seeders: </b>{result.nbSeeders} | <b>⌛Leechers: </b>{result.nbLeechers}\n"
+        msg += f"<b>📎Link: </b><code>{result.fileUrl}</code>\n\n"
         if index == 3:
             break
     return msg
