@@ -31,34 +31,34 @@ def stats(update, context):
     cpuUsage = psutil.cpu_percent(interval=0.5)
     memory = psutil.virtual_memory().percent
     disk = psutil.disk_usage('/').percent
-    stats = f'<b>Bot Uptime:</b> <code>{currentTime}</code>\n' \
-            f'<b>Total Disk Space:</b> <code>{total}</code>\n' \
-            f'<b>Used:</b> <code>{used}</code>' \
-            f'<b>Free:</b> <code>{free}</code>\n\n' \
-            f'<b>Upload:</b> <code>{sent}</code>\n' \
-            f'<b>Download:</b> <code>{recv}</code>\n\n' \
-            f'<b>CPU:</b> <code>{cpuUsage}%</code>' \
-            f'<b>RAM:</b> <code>{memory}%</code>' \
-            f'<b>DISK:</b> <code>{disk}%</code>'
+    stats = f'<b>💤Bot Uptime:</b> <code>{currentTime}</code>\n' \
+            f'<b>⌛Total Disk Space:</b> <code>{total}</code>\n' \
+            f'<b>🕹Used:</b> <code>{used}</code>' \
+            f'<b>💾Free:</b> <code>{free}</code>\n\n' \
+            f'<b>🔺Upload:</b> <code>{sent}</code>\n' \
+            f'<b>🔻Download:</b> <code>{recv}</code>\n\n' \
+            f'<b>🖥CPU:</b> <code>{cpuUsage}%</code>' \
+            f'<b>📏RAM:</b> <code>{memory}%</code>' \
+            f'<b>📀DISK:</b> <code>{disk}%</code>'
     sendMessage(stats, context.bot, update)
 
 
 def start(update, context):
     buttons = button_build.ButtonMaker()
-    buttons.buildbutton("Repo", "https://github.com/iamLiquidX/MirLeechX")
-    buttons.buildbutton("Group", "https://t.me/mirrorLeechTelegramBot")
+    buttons.buildbutton("📜Repo", "https://github.com/iamLiquidX/MirLeechX")
+    buttons.buildbutton("🕶User", "https://t.me/Devilsangry")
     reply_markup = InlineKeyboardMarkup(buttons.build_menu(2))
     if CustomFilters.authorized_user(update) or CustomFilters.authorized_chat(update):
         start_string = f'''
-This bot can mirror all your links to Google Drive!
+This bot can mirror all your links to Google Drive!🖇
 Type /{BotCommands.HelpCommand} to get a list of available commands
 '''
         sendMarkup(start_string, context.bot, update, reply_markup)
     else:
-        sendMarkup('Not Authorized user', context.bot, update, reply_markup)
+        sendMarkup('🚫Not Authorized user', context.bot, update, reply_markup)
 
 def restart(update, context):
-    restart_message = sendMessage("Restarting...", context.bot, update)
+    restart_message = sendMessage("♻️Restarting...", context.bot, update)
     # Save restart message object in order to reply to it after restarting
     with open(".restartmsg", "w") as f:
         f.truncate(0)
@@ -75,7 +75,7 @@ def restart(update, context):
 
 def ping(update, context):
     start_time = int(round(time.time() * 1000))
-    reply = sendMessage("Starting Ping", context.bot, update)
+    reply = sendMessage("Starting Ping📶", context.bot, update)
     end_time = int(round(time.time() * 1000))
     editMessage(f'{end_time - start_time} ms', reply)
 
@@ -211,11 +211,11 @@ def main():
     if os.path.isfile(".restartmsg"):
         with open(".restartmsg") as f:
             chat_id, msg_id = map(int, f)
-        bot.edit_message_text("Restarted successfully!", chat_id, msg_id)
+        bot.edit_message_text("Restarted successfully!✅", chat_id, msg_id)
         os.remove(".restartmsg")
     elif OWNER_ID:
         try:
-            text = "<b>Bot Restarted!</b>"
+            text = "<b>Bot Restarted!🔄</b>"
             bot.sendMessage(chat_id=OWNER_ID, text=text, parse_mode=ParseMode.HTML)
             if AUTHORIZED_CHATS:
                 for i in AUTHORIZED_CHATS:
@@ -240,7 +240,7 @@ def main():
     dispatcher.add_handler(stats_handler)
     dispatcher.add_handler(log_handler)
     updater.start_polling(drop_pending_updates=IGNORE_PENDING_REQUESTS)
-    LOGGER.info("Bot Started!")
+    LOGGER.info("Bot Started!💨")
     signal.signal(signal.SIGINT, fs_utils.exit_clean_up)
 
 app.start()
