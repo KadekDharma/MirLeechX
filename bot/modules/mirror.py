@@ -69,7 +69,7 @@ class MirrorListener(listeners.MirrorListeners):
 
     def onDownloadComplete(self):
         with download_dict_lock:
-            LOGGER.info(f"Download completed: {download_dict[self.uid].name()}")
+            LOGGER.info(f"Download completed✅: {download_dict[self.uid].name()}")
             download = download_dict[self.uid]
             name = str(download.name()).replace('/', '')
             gid = download.gid()
@@ -89,8 +89,8 @@ class MirrorListener(listeners.MirrorListeners):
                 else:
                     subprocess.run(["7z", "a", "-mx=0", path, m_path])
             except FileNotFoundError:
-                LOGGER.info('File to archive not found!')
-                self.onUploadError('Internal error occurred!!')
+                LOGGER.info('File to archive not found!🚫')
+                self.onUploadError('Internal error occurred!!🚫')
                 return
             try:
                 shutil.rmtree(m_path)
@@ -100,7 +100,7 @@ class MirrorListener(listeners.MirrorListeners):
             try:
                 if os.path.isfile(m_path):
                     path = fs_utils.get_base_name(m_path)
-                LOGGER.info(f"Extracting: {name}")
+                LOGGER.info(f"Extracting📂: {name}")
                 with download_dict_lock:
                     download_dict[self.uid] = ExtractStatus(name, m_path, size)
                 pswd = self.pswd
@@ -116,7 +116,7 @@ class MirrorListener(listeners.MirrorListeners):
                                 else:
                                     result = subprocess.run(["7z", "x", m_path, f"-o{dirpath}"])
                                 if result.returncode != 0:
-                                    LOGGER.warning('Unable to extract archive!')
+                                    LOGGER.warning('Unable to extract archive📂!')
                                 break
                         for filee in files:
                             if filee.endswith(".rar") or re.search(r'\.r\d+$', filee) \
@@ -132,14 +132,14 @@ class MirrorListener(listeners.MirrorListeners):
                         result = subprocess.run(["extract", m_path])
                     if result.returncode == 0:
                         os.remove(m_path)
-                        LOGGER.info(f"Deleting archive: {m_path}")
+                        LOGGER.info(f"Deleting archive📂: {m_path}")
                     else:
-                        LOGGER.warning('Unable to extract archive! Uploading anyway')
+                        LOGGER.warning('Unable to extract archive📂! Uploading anyway')
                         path = f'{DOWNLOAD_DIR}{self.uid}/{name}'
                 LOGGER.info(f'got path: {path}')
 
             except NotSupportedExtractionArchive:
-                LOGGER.info("Not any valid archive, uploading file as it is.")
+                LOGGER.info("Not any valid archive📂, uploading file as it is.")
                 path = f'{DOWNLOAD_DIR}{self.uid}/{name}'
         else:
             path = f'{DOWNLOAD_DIR}{self.uid}/{name}'
@@ -157,10 +157,10 @@ class MirrorListener(listeners.MirrorListeners):
                             checked = True
                             with download_dict_lock:
                                 download_dict[self.uid] = SplitStatus(up_name, up_path, size)
-                            LOGGER.info(f"Splitting: {up_name}")
+                            LOGGER.info(f"Splitting✂️: {up_name}")
                         fs_utils.split(f_path, f_size, filee, dirpath, TG_SPLIT_SIZE)
                         os.remove(f_path)
-            LOGGER.info(f"Leech Name: {up_name}")
+            LOGGER.info(f"Leech Name✏️: {up_name}")
             tg = pyrogramEngine.TgUploader(up_name, self)
             tg_upload_status = TgUploadStatus(tg, size, gid, self)
             with download_dict_lock:
@@ -168,7 +168,7 @@ class MirrorListener(listeners.MirrorListeners):
             update_all_messages()
             tg.upload()
         else:
-            LOGGER.info(f"Upload Name: {up_name}")
+            LOGGER.info(f"Upload Name✏️: {up_name}")
             drive = gdriveTools.GoogleDriveHelper(up_name, self)
             upload_status = UploadStatus(drive, size, gid, self)
             with download_dict_lock:
@@ -191,7 +191,7 @@ class MirrorListener(listeners.MirrorListeners):
             uname = f"@{self.message.from_user.username}"
         else:
             uname = f'<a href="tg://user?id={self.message.from_user.id}">{self.message.from_user.first_name}</a>'
-        msg = f"{uname} your download has been stopped due to: {error}"
+        msg = f"{uname} your download has been stopped due to❗❗: {error}"
         sendMessage(msg, self.bot, self.update)
         if count == 0:
             self.clean()
@@ -213,16 +213,16 @@ class MirrorListener(listeners.MirrorListeners):
             count = len(files)
             if self.message.chat.type == 'private':
                 msg = f'<code>{link}</code>\n'
-                msg += f'<b>Total Files: </b>{count}'
+                msg += f'<b>Total Files📁: </b>{count}'
                 if typ != 0:
-                    msg += f'\n<b>Corrupted Files: </b>{typ}'
+                    msg += f'\n<b>Corrupted Files📁: </b>{typ}'
                 sendMessage(msg, self.bot, self.update)
             else:
                 chat_id = str(self.message.chat.id)[4:]
                 msg = f"<a href='https://t.me/c/{chat_id}/{self.uid}'>{link}</a>\n"
-                msg += f'<b>Total Files: </b>{count}\n'
+                msg += f'<b>Total Files📁: </b>{count}\n'
                 if typ != 0:
-                    msg += f'<b>Corrupted Files: </b>{typ}\n'
+                    msg += f'<b>Corrupted Files📁: </b>{typ}\n'
                 msg += f'<b>cc: </b>{uname}\n\n'
                 fmsg = ''
                 for index, item in enumerate(list(files), start=1):
@@ -249,20 +249,20 @@ class MirrorListener(listeners.MirrorListeners):
                 update_all_messages()
             return
         with download_dict_lock:
-            msg = f'<code>{download_dict[self.uid].name()}</code>\n\n<b>Size: </b>{size}'
+            msg = f'<code>{download_dict[self.uid].name()}</code>\n\n<b>Size💾: </b>{size}'
             if os.path.isdir(f'{DOWNLOAD_DIR}/{self.uid}/{download_dict[self.uid].name()}'):
-                msg += '\n\n<b>Type: </b>Folder'
-                msg += f'\n<b>SubFolders: </b>{folders}'
-                msg += f'\n<b>Files: </b>{files}'
+                msg += '\n\n<b>Type📝: </b>Folder'
+                msg += f'\n<b>SubFolders📁: </b>{folders}'
+                msg += f'\n<b>Files📄: </b>{files}'
             else:
-                msg += f'\n\n<b>Type: </b>{typ}'
+                msg += f'\n\n<b>Type📝: </b>{typ}'
             buttons = button_build.ButtonMaker()
             if SHORTENER is not None and SHORTENER_API is not None:
                 surl = short_url(link)
-                buttons.buildbutton("Drive Link", surl)
+                buttons.buildbutton("Drive Link📎", surl)
             else:
-                buttons.buildbutton("Drive Link", link)
-            LOGGER.info(f'Done Uploading {download_dict[self.uid].name()}')
+                buttons.buildbutton("Drive Link📎", link)
+            LOGGER.info(f'Done Uploading📤 {download_dict[self.uid].name()}')
             if INDEX_URL is not None:
                 url_path = requests.utils.quote(f'{download_dict[self.uid].name()}')
                 share_url = f'{INDEX_URL}/{url_path}'
@@ -270,21 +270,21 @@ class MirrorListener(listeners.MirrorListeners):
                     share_url += '/'
                     if SHORTENER is not None and SHORTENER_API is not None:
                         siurl = short_url(share_url)
-                        buttons.buildbutton("Index Link", siurl)
+                        buttons.buildbutton("Index Link📎", siurl)
                     else:
-                        buttons.buildbutton("Index Link", share_url)
+                        buttons.buildbutton("Index Link📎", share_url)
                 else:
                     share_urls = f'{INDEX_URL}/{url_path}?a=view'
                     if SHORTENER is not None and SHORTENER_API is not None:
                         siurl = short_url(share_url)
-                        buttons.buildbutton("Index Link", siurl)
+                        buttons.buildbutton("Index Link📎", siurl)
                         if VIEW_LINK:
                             siurls = short_url(share_urls)
-                            buttons.buildbutton("View Link", siurls)
+                            buttons.buildbutton("View Link👁‍🗨", siurls)
                     else:
-                        buttons.buildbutton("Index Link", share_url)
+                        buttons.buildbutton("Index Link📎", share_url)
                         if VIEW_LINK:
-                            buttons.buildbutton("View Link", share_urls)
+                            buttons.buildbutton("View Link👁‍🗨", share_urls)
             if BUTTON_FOUR_NAME is not None and BUTTON_FOUR_URL is not None:
                 buttons.buildbutton(f"{BUTTON_FOUR_NAME}", f"{BUTTON_FOUR_URL}")
             if BUTTON_FIVE_NAME is not None and BUTTON_FIVE_URL is not None:
@@ -407,11 +407,11 @@ def _mirror(bot, update, isZip=False, extract=False, isQbit=False, isLeech=False
             open(file_name, "wb").write(resp.content)
             link = f"{file_name}"
         else:
-            sendMessage(f"ERROR: link got HTTP response: {resp.status_code}", bot, update)
+            sendMessage(f"ERROR: link got HTTP response📵: {resp.status_code}", bot, update)
             return
 
     elif not bot_utils.is_url(link) and not bot_utils.is_magnet(link):
-        sendMessage('No download source provided', bot, update)
+        sendMessage('No download source provided❗❗', bot, update)
         return
     elif not os.path.exists(link) and not bot_utils.is_mega_link(link) and not bot_utils.is_gdrive_link(link) and not bot_utils.is_magnet(link):
         try:
@@ -436,9 +436,9 @@ def _mirror(bot, update, isZip=False, extract=False, isQbit=False, isLeech=False
             sendMessage(res, bot, update)
             return
         if ZIP_UNZIP_LIMIT is not None:
-            LOGGER.info('Checking File/Folder Size...')
+            LOGGER.info('Checking File/Folder Size...🔢')
             if size > ZIP_UNZIP_LIMIT * 1024**3:
-                msg = f'Failed, Zip/Unzip limit is {ZIP_UNZIP_LIMIT}GB.\nYour File/Folder size is {get_readable_file_size(size)}.'
+                msg = f'Failed❗, Zip/Unzip limit is {ZIP_UNZIP_LIMIT}GB.\nYour File/Folder size is {get_readable_file_size(size)}.'
                 sendMessage(msg, bot, update)
                 return
         LOGGER.info(f"Download Name: {name}")
